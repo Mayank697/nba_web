@@ -1,5 +1,25 @@
 <!DOCTYPE html>
 
 <head>
-    <title>bbalfast - {{ title }} </title>
+    <title>{{ title }} </title>
+
+    <!-- Bootstrap css -->
+    <link href="{{ url_for('static', filename='/stylesheets/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+
+    <!--Custom css-->
+    <link href="{{ url_for('static', filename='/stylesheets/style.css') }}" rel="stylesheet" type="text/css">
 </head>
+
+<!--Static Navbar-->
+<nav class="navbar navbar-static-top navbar-inverse bg-inverse">
+    <a class="navbar-brand" href="/">BasketBall</a>
+</nav>
+
+{% block body %}
+<!--Content come's here-->
+{% endblock %}
+
+<!--Bootstrap Core javascript-->
+<script src="{{ url_for('static', filename='/javascript/bootstrap.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/javascript/jquery-3.1.1.slim.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/javascript/tether.min.js') }}"></script>
