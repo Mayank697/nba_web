@@ -1,8 +1,18 @@
 from nbapy import scoreboard
 import pandas as pd
+import datetime
+from pytz import timezone
 
 game_id = '0021900017'  # taken from 'https://stats.nba.com/game/0021900017/'
-stats = scoreboard.Scoreboard(month=7, day=27, year=2020, league_id='00', offset=0)
+date = datetime.datetime.today() - datetime.timedelta(1)
+stats = scoreboard.Scoreboard(month=date.month, day=date.day, year=date.year)
 scores = stats.line_score()
-for team in scores:
-    print(team)
+status = stats.game_header()
+# for team in scores:
+#     print(team)
+
+# print("====================================================================================")
+
+for i in status:
+    print(i)
+# print(status)

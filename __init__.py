@@ -1,11 +1,17 @@
 from flask import Flask
 from flask import render_template
+from flask import request
+from flask import url_for
 
 from nbapy import scoreboard 
 
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import dateutil
+import requests
 
 app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 
 # routing
 @app.route("/")
@@ -14,13 +20,37 @@ def index():
     Render's today's game on index page
 
     """
-    datetime_today = datetime.today()
+    datetime_today = datetime.today() - timedelta(1)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
     games = get_games(datetime_today)
     return render_template("index.html",
                            title="Daily Scores",
                            pretty_date_today=pretty_date_today,
                            games=games)
+
+@app.route('/scores', methods=["POST"])
+def scores_post_request():
+    '''
+        Score page after using datepicker plugin
+    '''
+    date = request.form["date"]
+    return render_score_page("index.html", date, date)
+
+def render_score_page(page, datestring, title):
+    '''
+        Args:
+            page: Name of the html template to render
+            datestring: date of the scoreboard
+    '''
+    datetime_today = dateutil.parser.parser(datestring)
+    pretty_date_today = datetime_today.strftime("%b %d, %Y")
+    games = get_games(datetime_today)
+    return render_template(page,
+                            title=title,
+                            pretty_date_today=pretty_date_today,
+                            games=games)
+
+
 
 def get_games(date):
     """
@@ -34,6 +64,7 @@ def get_games(date):
     """
     stats = scoreboard.Scoreboard(month=date.month, day=date.day, year=date.year)
     line_score = stats.line_score()
+    game_status = stats.game_header()
 
     #list of games
     games = []
@@ -60,6 +91,10 @@ def get_games(date):
             current_game["TEAM_2_ID"] = line_score["TEAM_ID"][team]
 
             current_game["GAME_ID"] = line_score["GAME_ID"][team]
+
+            for status in game_status.index:
+                if(line_score["GAME_ID"][team] == game_status["GAME_ID"][status]):
+                    current_game["GAME_STATUS_TEXT"] = game_status["GAME_STATUS_TEXT"][status]
 
             games.append(current_game.copy())
             current_game = {}
