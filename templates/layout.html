@@ -8,6 +8,11 @@
 
     <!--Custom css-->
     <link href="{{ url_for('static', filename='/stylesheets/style.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='stylesheets/font-awesome.min.css') }}" rel='stylesheet' type='text/css' />
+
+    <!-- jQuery -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/jquery-ui.css') }}">
+
 </head>
 
 <!--Static Navbar-->
@@ -19,7 +24,17 @@
 <!--Content come's here-->
 {% endblock %}
 
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='javascript/jquery-ui.js') }}"></script>
+
+<!-- Bootstrap DataTable -->
+<script src="{{ url_for('static', filename='javascript/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='javascript/dataTables.bootstrap4.min.js') }}"></script>
+
+
 <!--Bootstrap Core javascript-->
 <script src="{{ url_for('static', filename='/javascript/bootstrap.min.js') }}"></script>
 <script src="{{ url_for('static', filename='/javascript/jquery-3.1.1.slim.min.js') }}"></script>
 <script src="{{ url_for('static', filename='/javascript/tether.min.js') }}"></script>
+<script src="{{ url_for('static', filename='javascripts/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='/javascript/datepicker.js') }}"></script>

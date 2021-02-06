@@ -5,25 +5,38 @@
     <div class="container ">
         <h3>{{ pretty_date_today }}</h3>
         <div class="row">
-            <div class="col-lg-5 d-flex justify-content-around">
+            <div class="col-lg-5">
+                <br>
+                <form id="dateform" action="/scores" method="POST" class="form-inline text-lg-center">
+                    <a href="/scores/{{ yesterday }}" class="btn btn-primary btn-mds"><i class="fa fa-caret-left" aria-hidden="true"></i></a> &nbsp;
+                    <input type="text" name="date" id="datepicker" class="form-control form-control-lg" style="font-family:Helvetica, FontAwesome" placeholder="&#xf073; &nbsp;{{ pretty_date_today }}">
+                    &nbsp; <a href="/scores/{{ tomorrow }}" class="btn btn-primary btn-md"><i class="fa fa-caret-right" aria-hidden="true"></i></a>
+                </form>
                 <div class="list-group">
                     {% for game in games %}
                         <a class="score-size text-xs-center nounderline list-group-item list-group-item-action" href="/boxscores/{{ game['GAME_ID'] }}">
-                        <div class="row d-flex justify-content-around">
-                            <div class="col-xs-4 d-flex justify-content-around left-team">
-                                <img class="team-logo" src="/static/images/{{ game['TEAM_1_ABBREVIATION'].lower() }}.png">
-                                {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"] }}
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <b class="winning-team">
+                                    <img class="team-logo" src="/static/images/{{ game['TEAM_1_ABBREVIATION'].lower() }}.png">
+                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"] }}
+                                </b>
                                 <br>
                                 {{ game["TEAM_1_WINS_LOSSES"] }}
                             </div>
-                            <div class="col-xs-4 broadcast-column final-text status-of-game d-flex justify-content-around">
-                                &nbsp;
-                                {{ game["GAME_STATUS_TEXT"] }}
-                                &nbsp;
+                            <div class="col-xs-4 broadcast-column">
+                                <div class="final-text">
+                                    {{ game["GAME_STATUS_TEXT"] }}
+                                </div>
+                                <div class="broadcaster">
+                                    TNT
+                                </div>
                             </div>
-                            <div class="col-xs-4 right-team">
-                                {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"] }}
-                                <img class="team-logo" src="/static/images/{{ game['TEAM_2_ABBREVIATION'].lower() }}.png">
+                            <div class="col-xs-4">
+                                <b class="winning-team">
+                                    <img class="team-logo" src="/static/images/{{ game['TEAM_2_ABBREVIATION'].lower() }}.png">
+                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"] }}
+                                </b>
                                 <br>
                                 {{ game["TEAM_2_WINS_LOSSES"] }}
                             </div>

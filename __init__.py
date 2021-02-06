@@ -7,7 +7,7 @@ from nbapy import scoreboard
 
 from datetime import datetime, timedelta
 
-import dateutil
+import dateutil.parser
 import requests
 
 app = Flask(__name__)
@@ -42,7 +42,7 @@ def render_score_page(page, datestring, title):
             page: Name of the html template to render
             datestring: date of the scoreboard
     '''
-    datetime_today = dateutil.parser.parser(datestring)
+    datetime_today = dateutil.parser.parse(datestring)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
     games = get_games(datetime_today)
     return render_template(page,
