@@ -22,13 +22,15 @@ def index():
     """
     datetime_today = datetime.today() - timedelta(1)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
-    games = get_games(datetime_today)
-    return render_template("index.html",
-                           title="Daily Scores",
-                           pretty_date_today=pretty_date_today,
-                           games=games)
+    return render_score_page("index.html", pretty_date_today, "Daily Score")
 
-@app.route('/scores', methods=["POST"])
+@app.route('/scores/<datestring>')
+def scores(datestring):
+    """Link for specific score pages for a certain day.
+    """
+    return render_score_page("index.html", datestring, "Daily Score/ "+datestring)
+
+app.route('/scores', methods=["POST"])
 def scores_post_request():
     '''
         Score page after using datepicker plugin
@@ -43,11 +45,15 @@ def render_score_page(page, datestring, title):
             datestring: date of the scoreboard
     '''
     datetime_today = dateutil.parser.parse(datestring)
+    yesterday = datetime_today - timedelta(1)
+    tomorrow = datetime_today + timedelta(1)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
     games = get_games(datetime_today)
     return render_template(page,
                             title=title,
                             pretty_date_today=pretty_date_today,
+                            yesterday=yesterday,
+                            tomorrow=tomorrow,
                             games=games)
 
 
@@ -95,6 +101,7 @@ def get_games(date):
             for status in game_status.index:
                 if(line_score["GAME_ID"][team] == game_status["GAME_ID"][status]):
                     current_game["GAME_STATUS_TEXT"] = game_status["GAME_STATUS_TEXT"][status]
+                    # current_game["NATL_TV_BROADCASTER_ABBREVIATION"] = game_status["NATL_TV_BROADCASTER_ABBREVIATION"][status]
 
             games.append(current_game.copy())
             current_game = {}
