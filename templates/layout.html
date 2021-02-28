@@ -14,25 +14,23 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/jquery-ui.css') }}">
 
 </head>
+<body>
+    
+    <!--Static Navbar-->
+    <nav class="navbar navbar-static-top navbar-inverse bg-inverse">
+        <a class="navbar-brand" href="/">BasketBall</a>
+    </nav>
+    {% block body %}
+    <!--Content come's here-->
+    {% endblock %}
 
-<!--Static Navbar-->
-<nav class="navbar navbar-static-top navbar-inverse bg-inverse">
-    <a class="navbar-brand" href="/">BasketBall</a>
-</nav>
-
-{% block body %}
-<!--Content come's here-->
-{% endblock %}
-
-<!-- jQuery -->
-<script src="{{ url_for('static', filename='javascript/jquery-ui.js') }}"></script>
-
-<!-- Bootstrap DataTable -->
-<script src="{{ url_for('static', filename='javascript/jquery.dataTables.min.js') }}"></script>
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='javascript/jquery-ui.js') }}"></script>
 
 
-<!--Bootstrap Core javascript-->
-<script src="{{ url_for('static', filename='/javascript/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='/javascript/tether.min.js') }}"></script>
-<script src="{{ url_for('static', filename='javascripts/jquery.min.js') }}"></script>
-<script src="{{ url_for('static', filename='/javascript/datepicker.js') }}"></script>
+    <!--Bootstrap Core javascript-->
+    <script src="{{ url_for('static', filename='/javascript/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/javascript/tether.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/javascript/datepicker.js') }}"></script>
+</body>

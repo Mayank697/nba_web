@@ -49,12 +49,27 @@ def render_score_page(page, datestring, title):
     tomorrow = datetime_today + timedelta(1)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
     games = get_games(datetime_today)
+
+    winners = []
+
+    for i in games:
+        if(i["TEAM_1_PTS"] or i["TEAM_1_PTS"]):
+            if(i["TEAM_1_PTS"] > i["TEAM_2_PTS"]):
+                winners.append(i["TEAM_1_ABBREVIATION"])
+            elif(i["TEAM_1_PTS"] < i["TEAM_2_PTS"]):
+                winners.append(i["TEAM_1_ABBREVIATION"])
+            else:
+                winners.append(None)
+        else:
+            winners.append(None)
+
     return render_template(page,
                             title=title,
                             pretty_date_today=pretty_date_today,
                             yesterday=yesterday,
                             tomorrow=tomorrow,
-                            games=games)
+                            games=games,
+                            winners=winners)
 
 
 
@@ -108,6 +123,10 @@ def get_games(date):
             game_sequence_counter = 0
 
     return games
+
+# def get_winning_team(date):
+    
+
 
 # runing main function
 if __name__ == "__main__":
