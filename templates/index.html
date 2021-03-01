@@ -12,12 +12,12 @@
         <table class="table table-hover table-responsive-sm" style="width: 50%;"> 
             <tbody>
                 {% for game in games %}
-                    {% if(winners[loop.index] == game["TEAM_1_ABBREVIATION"]) %}
+                    {% if(winners[loop.index-1] == game["TEAM_1_ABBREVIATION"]) %}
                         <tr>
                             <td class="final-text" style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_1_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"] if game["TEAM_1_PTS"] else "" }}
+                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"]|int if game["TEAM_1_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_1_WINS_LOSSES"] }}
                                 </a>
@@ -28,18 +28,18 @@
                             <td style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_2_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"] if game["TEAM_2_PTS"] else "" }}
+                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"]|int if game["TEAM_2_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_2_WINS_LOSSES"] }}
                                 </a>
                             </td>
                         </tr>
-                    {% elif(winners[loop.index] == game["TEAM_2_ABBREVIATION"]) %}
+                    {% elif(winners[loop.index-1] == game["TEAM_2_ABBREVIATION"]) %}
                         <tr>
                             <td style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_1_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"] if game["TEAM_1_PTS"] else "" }}
+                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"]|int if game["TEAM_1_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_1_WINS_LOSSES"] }}
                                 </a>
@@ -50,7 +50,7 @@
                             <td class="final-text" style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_2_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"] if game["TEAM_2_PTS"] else "" }}
+                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"]|int if game["TEAM_2_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_2_WINS_LOSSES"] }}
                                 </a>
@@ -61,7 +61,7 @@
                             <td style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_1_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"] if game["TEAM_1_PTS"] else "" }}
+                                    {{ game["TEAM_1_ABBREVIATION"] }} {{ game["TEAM_1_PTS"]|int if game["TEAM_1_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_1_WINS_LOSSES"] }}
                                 </a>
@@ -72,7 +72,7 @@
                             <td style="text-align: center;">
                                 <a href="/boxscores/{{ game['GAME_ID'] }}">
                                     <img class="team-logo" src="/static/images/{{ game['TEAM_2_ABBREVIATION'].lower() }}.png">
-                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"] if game["TEAM_2_PTS"] else "" }}
+                                    {{ game["TEAM_2_ABBREVIATION"] }} {{ game["TEAM_2_PTS"]|int if game["TEAM_2_PTS"]|int else "" }}
                                     <br>
                                     {{ game["TEAM_2_WINS_LOSSES"] }}
                                 </a>
