@@ -28,7 +28,7 @@ def index():
 def scores(datestring):
     """Link for specific score pages for a certain day.
     """
-    return render_score_page("index.html", datestring, "Daily Score/ "+datestring)
+    return render_score_page("index.html", datestring, "NBA-Stats")
 
 app.route('/scores', methods=["POST"])
 def scores_post_request():
@@ -36,7 +36,7 @@ def scores_post_request():
         Score page after using datepicker plugin
     '''
     date = request.form["date"]
-    return render_score_page("index.html", date, date)
+    return render_score_page("index.html", date, "NBA-Stats")
 
 def render_score_page(page, datestring, title):
     '''
@@ -53,11 +53,11 @@ def render_score_page(page, datestring, title):
     winners = []
 
     for i in games:
-        if(i["TEAM_1_PTS"] or i["TEAM_1_PTS"]):
+        if(i["TEAM_1_PTS"] or i["TEAM_2_PTS"]):
             if(i["TEAM_1_PTS"] > i["TEAM_2_PTS"]):
                 winners.append(i["TEAM_1_ABBREVIATION"])
             elif(i["TEAM_1_PTS"] < i["TEAM_2_PTS"]):
-                winners.append(i["TEAM_1_ABBREVIATION"])
+                winners.append(i["TEAM_2_ABBREVIATION"])
             else:
                 winners.append(None)
         else:
