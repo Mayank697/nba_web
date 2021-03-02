@@ -4,6 +4,8 @@ from flask import request
 from flask import url_for
 
 from nbapy import scoreboard 
+from constants import CITY_TO_TEAM
+from constants import TEAM_ID_DATA
 
 from datetime import datetime, timedelta
 
@@ -62,7 +64,20 @@ def boxscore(gameid, season=CURRENT_SEASON):
     try:
         boxscore_summary = game.BoxscoreSummary(gameid)
     except:
-        return render_template("boxscores.html",tutle="boxscore,len_team_stats=0")    
+        return render_template("boxscores.html",title="boxscore,len_team_stats=0")
+
+
+     boxscore_game_summary = boxscore_summary.game_summary()
+     home_team = boxscore_game_summary[0]["GAMECODE"][9:12]
+     away_team = boxscore_game_summary[0]["GAMECODE"][12:16]
+
+     if home_team in TEAM_ID_DATA:
+         home_team_city = TEAM_ID_DATA[home_team]["city"]
+         home_team_city = TEAM_ID_DATA[home_team]["name"]
+         home_team_city = TEAM_ID_DATA[home_team]["img"]
+     else:
+         home_team_logo = False    
+
 
 
 def render_score_page(page, datestring, title):
