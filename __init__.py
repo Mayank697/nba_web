@@ -9,6 +9,15 @@ from datetime import datetime, timedelta
 
 import dateutil.parser
 import requests
+import nbapy
+from nbapy.constants import CURRENT_SEASON
+from nbapy.constants import TEAMS
+from nbapy import constants 
+from nbapy import game
+from nbapy import player
+from nbapy import team  
+from nbapy import league
+from nbapy import draft_combine
 
 app = Flask(__name__)
 app = Flask(__name__, static_url_path='/static')
@@ -37,6 +46,24 @@ def scores_post_request():
     '''
     date = request.form["date"]
     return render_score_page("index.html", date, date)
+
+@app.route('/boxscore/<gameid>')
+def boxscore(gameid, season=CURRENT_SEASON):
+    boxscore = game.Boxscore(gameid)
+
+    player_stats = boxscore.player_stats()
+    team_stats = boxscore.team_stats()
+
+    len_player_stats = len(player_stats)
+    len_team_stats = len(team_stats)
+    num_starters = 5
+    starters_title = True
+
+    try:
+        boxscore_summary = game.BoxscoreSummary(gameid)
+    except:
+        return render_template("boxscores.html",tutle="boxscore,len_team_stats=0")    
+
 
 def render_score_page(page, datestring, title):
     '''
