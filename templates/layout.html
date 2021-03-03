@@ -4,10 +4,10 @@
     <title>{{ title }} </title>
 
     <!-- Bootstrap css -->
-    <link href="{{ url_for('static', filename='/stylesheets/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='stylesheets/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
 
     <!--Custom css-->
-    <link href="{{ url_for('static', filename='/stylesheets/style.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ url_for('static', filename='stylesheets/style.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('static', filename='stylesheets/font-awesome.min.css') }}" rel='stylesheet' type='text/css' />
 
     <!-- jQuery -->
@@ -34,13 +34,47 @@
     <meta name="msapplication-TileImage" content="{{ url_for('static', filename='nba.ico/ms-icon-144x144.png') }}">
     <meta name="theme-color" content="#ffffff">
 
+    <!-- coustum css -->
+    <style>
+        .topnav {
+            overflow: hidden;
+            background-color: #333;
+        }
+
+        .topnav a {
+            float: left;
+            color: #f2f2f2;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .topnav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .topnav a.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+
 </head>
 <body>
     
     <!--Static Navbar-->
-    <nav class="navbar navbar-static-top navbar-inverse bg-inverse">
+    <!-- <nav class="navbar navbar-static-top navbar-inverse bg-inverse">
         <a class="navbar-brand" href="/">BasketBall</a>
-    </nav>
+        <a class="nav nav-item" href="/standings">Standings</a>
+    </nav> -->
+    <div class="topnav">
+        <a class="active" href="/">Home</a>
+        <a href="/standings">Standings</a>
+        <!-- <a href="#contact">Contact</a>
+        <a href="#about">About</a> -->
+    </div>
     {% block body %}
     <!--Content come's here-->
     {% endblock %}

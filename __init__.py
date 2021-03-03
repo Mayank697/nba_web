@@ -4,6 +4,7 @@ from flask import request
 from flask import url_for
 
 from nbapy import scoreboard 
+from constants import CITY_TO_TEAM
 
 from datetime import datetime, timedelta
 
@@ -30,13 +31,28 @@ def scores(datestring):
     """
     return render_score_page("index.html", datestring, "NBA-Stats")
 
-app.route('/scores', methods=["POST"])
+@app.route('/scores', methods=["POST"])
 def scores_post_request():
     '''
         Score page after using datepicker plugin
     '''
     date = request.form["date"]
     return render_score_page("index.html", date, "NBA-Stats")
+
+@app.route('/standings')
+def standings():
+    '''
+        Default Standings
+    '''
+    stats = scoreboard.Scoreboard()
+    east_standings = stats.east_conf_standings_by_day()
+    west_standings = stats.west_conf_standings_by_day()
+
+    return render_template("standings.html",
+                            title="standings",
+                            east_standings=east_standings,
+                            west_standings=west_standings,
+                            team=CITY_TO_TEAM)
 
 def render_score_page(page, datestring, title):
     '''
