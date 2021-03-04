@@ -4,11 +4,22 @@ from flask import request
 from flask import url_for
 
 from nbapy import scoreboard 
+from constants import CITY_TO_TEAM
+from constants import TEAM_ID_DATA
 
 from datetime import datetime, timedelta
 
 import dateutil.parser
 import requests
+import nbapy
+from nbapy.constants import CURRENT_SEASON
+from nbapy.constants import TEAMS
+from nbapy import constants 
+from nbapy import game
+from nbapy import player
+from nbapy import team  
+from nbapy import league
+from nbapy import draft_combine
 
 from constants import CITY_TO_TEAM
 
@@ -40,20 +51,170 @@ def scores_post_request():
     date = request.form["date"]
     return render_score_page("index.html", date, "NBA-Stats")
 
-@app.route('/standings')
-def standings():
-    '''
-        Default standing page
-    '''
-    stats = scoreboard.Scoreboard()
-    east_standings = stats.east_conf_standings_by_day()
-    west_standings = stats.west_conf_standings_by_day()
+@app.route('/boxscores/<gameid>')
+def boxscore(gameid, season=CURRENT_SEASON):
+    boxscore = game.BoxScore(gameid)
 
-    return render_template("standings.html",
-                            title="standings",
-                            east_standings=enumerate(east_standings, 1),
-                            west_standings=enumerate(west_standings, 1),
-                            team=CITY_TO_TEAM)
+    player_stats = boxscore.players_stats()
+    team_stats = boxscore.team_stats()
+
+    len_player_stats = len(player_stats)
+    len_team_stats = len(team_stats)
+    num_starters = 5
+    starters_title = True
+
+    try:
+        boxscore_summary = game.BoxscoreSummary(gameid)
+    except:
+        return render_template("boxscores.html",title="boxscore,len_team_stats=0")
+
+
+    boxscore_game_summary = boxscore_summary.game_summary()
+    home_team = boxscore_game_summary[0]["GAMECODE"][9:12]
+    away_team = boxscore_game_summary[0]["GAMECODE"][12:16]
+
+    if home_team in TEAM_ID_DATA:
+         home_team_city = TEAM_ID_DATA[home_team]["city"]
+         home_team_city = TEAM_ID_DATA[home_team]["name"]
+         home_team_city = TEAM_ID_DATA[home_team]["img"]
+    else:
+         home_team_logo = False
+
+    if away_team in TEAM_ID_DATA:
+         away_team_city = TEAM_ID_DATA[away_team]["city"]
+         away_team_city = TEAM_ID_DATA[away_team]["img"]
+         away_team_city = TEAM_ID_DATA[away_team]["name"]
+    else:
+         away_team_logo = False
+
+    boxscore_game_date = boxscore_game_summary[0]["GAME_DATE_EST"]
+    datetime_boxscore = datetime.datetime.strptime(boxscore_game_date[:10], "%y-%m-%d")
+    pretty_date = datetime_boxscore.strftime("%b %d, %y")
+
+       #get current season like "2016-17"
+    to_year = int(boxscore_game_summary[0]["SEASON"])
+    next_year = to_year + 1
+
+    season = str(to_year) + "_" + str(next_year)[2:4]
+
+       #Create NBA recap link
+    recap_date = datetime_boxscore.strftime("%Y/%m/%d") 
+      # Get nba recap video links for previous years like 2016 or before.
+       # It takes 2 extra seconds. Commenting for now.
+     # nba_recap = False
+    if(to_year < 2016):
+        nba_recap = "http://www.nba.com/video/" + recap_date + "/" + gameid + "-" + home_team + "-" + away_team + "-recap"
+        if not test_link(nba_recap):
+            yesterday = datetime_boxscore - datetime.timedelta(1)
+            recap_date = yesterday.strftime("%Y/%m/%d")
+            nba_recap = "http://www.nba.com/video/" + recap_date + "/" + gameid + "-" + home_team + "-" + away_team + "-recap"
+            if not test_link(nba_recap):
+                nba_recap = False
+    else:
+        nba_recap = False
+
+    #Figure out which team won or is winning.
+    leading_points = 0
+    winning = ""
+    for i in team_stats:
+        if i in team_stats:
+            leading_points = i["PTS"]
+            winning = I["TEAM_ABBREVIATION"]
+        elif i["PTS"] < leading_points:
+            continue
+        else:
+            winning = False
+    # Add a 0 to a single digit minute like 4:20 to 04:20
+    # Because bootstrap-datatable requires consistency.                          
+    for i in player_stats:
+        if (i["MIN"] and not isinstance(i["MIN"], int)):
+            if (len(i["MIN"]) == 4):
+                i["MIN"] = "0" + i["MIN"]
+
+
+    if (len_team_stats !=0):
+        team_summary_info = [team.TeamSummary(team_stats[0]["TEAM_ID"],season=season).info(),team.TeamSummary(team_stats[1]["TEAM_ID"],season=season).info()]
+
+    else:
+        team_summary_info = False
+    #Search for relevant reddit Post Game Thread.
+    boxscore_line_score = boxscore_summary.line_score()
+    """
+    startTime = time.time()
+    elapsedTime = time.time() - startTime
+    elapsedTIme = elapsedTime * 1000
+    print(elapsedTime)
+    """
+    #post_game_thread = False
+    post_game_thread = get_post_game_thread(next_year, boxscore_game_summary[0]["GAME_STATUS_TEXT"],boxscore_line_score, team_stats)
+
+    #Get link for fullmatchtv (full broadcast video link). It takes 2 extra seconds.
+    full_match_url = False
+    """
+
+     if (next_year > 2016 and boxscore_game_summary[0]["GAME_STATUS_TEXT"] == "Final"):
+        match_date = datetime_boxscore.strftime("%b-%-d-%Y")
+        full_match_url = search_nba_full_match(away_team_city,
+                                               away_team_name,
+                                               home_team_city,
+                                               home_team_name,
+                                               match_date)
+    else:
+        full_match_url = False
+    """
+
+    if (team_stats and boxscore_game_summary[0]["GAME_STATUS_TEXT"] == "Final"):
+        youtube_search_query = team_stats[0]["TEAM_CITY"] + " " + \
+                               team_stats[0]["TEAM_NAME"] + " vs " + \
+                               team_stats[1]["TEAM_CITY"] + " " + \
+                               team_stats[1]["TEAM_NAME"] + " " + \
+                               pretty_date
+        youtube_url = youtube_search(youtube_search_query, 1)
+    else:
+        youtube_url = False
+
+    inactive_players = boxscore_summary.inactive_players()
+    officials = boxscore_summary.officials()
+
+    return render_template("boxscore.html",title="boxscore",
+                            player_stats=player_stats,
+                            len_player_stats=len_player_stats,
+                            len_team_stats=len_team_stats,
+                            starters_title=starters_title,
+                            num_starters=num_starters,
+                            team_stats=team_stats,
+                            winning=winning,
+                            team_summary_info=team_summary_info,
+                            pretty_date=pretty_date,
+                            boxscore_line_score=boxscore_line_score,
+                            post_game_thread=post_game_thread,
+                            home_team=home_team,
+                            away_team=away_team,
+                            home_team_logo=home_team_logo,
+                            away_team_logo=away_team_logo,
+                            nba_recap=nba_recap,
+                            full_match_url=full_match_url,
+                            youtube_url=youtube_url,
+                            inactive_players=inactive_players,
+                            officials=officials)
+def test_link(link):
+    """Test if link is valid.
+    """
+    r = requests.get(link)
+    if (r.status_code != 200):
+        return False
+    else:
+        return True
+                                    
+
+
+
+
+
+         
+
+
+
 
 def render_score_page(page, datestring, title):
     '''
