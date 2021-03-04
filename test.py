@@ -7,8 +7,6 @@ from pytz import timezone
 game_id = '0021900017'  # taken from 'https://stats.nba.com/game/0021900017/'
 date = datetime.datetime.today() - datetime.timedelta(1)
 stats = scoreboard.Scoreboard(month=date.month, day=date.day, year=date.year)
-<<<<<<< HEAD
-=======
 east = stats.east_conf_standings_by_day()
 k = game.BoxScore("0022000536")
 j = k.players_stats()
@@ -22,7 +20,6 @@ for i in j:
 # available_videos = boxscore.available_video()
 # for team in scores:
 #     print(team)
->>>>>>> d404b169338f7cd88fce36cc83a729cb4abf2707
 
 east_standing = stats.east_conf_standings_by_day()
 series_standing = stats.series_standings()
@@ -39,11 +36,8 @@ for i in series_standing:
 
 # # print("====================================================================================")
 
-<<<<<<< HEAD
 # # for i in available_videos:
 # #     print(i)
 # # print(status)
 
-=======
->>>>>>> d404b169338f7cd88fce36cc83a729cb4abf2707
 # print(available_videos.head())
