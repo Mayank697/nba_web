@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="container">
+    <br>
+    <form id="dateform" action="/standings" method="POST" class="form-inline">
+        <input type="text" name="date" id="datepicker" class="form-control" placeholder="Date.....">
+    </form>
+    <br>
+    <h3>East Conference</h3>
+    <table class="standings-datatable table table-sm">
+        
+    </table>
+</div>
+
+{% endblock %}

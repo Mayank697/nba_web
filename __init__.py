@@ -10,6 +10,8 @@ from datetime import datetime, timedelta
 import dateutil.parser
 import requests
 
+from constants import CITY_TO_TEAM
+
 app = Flask(__name__)
 app = Flask(__name__, static_url_path='/static')
 
@@ -22,7 +24,7 @@ def index():
     """
     datetime_today = datetime.today() - timedelta(1)
     pretty_date_today = datetime_today.strftime("%b %d, %Y")
-    return render_score_page("index.html", pretty_date_today, "Daily Score")
+    return render_score_page("index.html", pretty_date_today, "NBA-Stats")
 
 @app.route('/scores/<datestring>')
 def scores(datestring):
@@ -30,13 +32,28 @@ def scores(datestring):
     """
     return render_score_page("index.html", datestring, "NBA-Stats")
 
-app.route('/scores', methods=["POST"])
+@app.route('/scores', methods=["POST"])
 def scores_post_request():
     '''
         Score page after using datepicker plugin
     '''
     date = request.form["date"]
     return render_score_page("index.html", date, "NBA-Stats")
+
+@app.route('/standings')
+def standings():
+    '''
+        Default standing page
+    '''
+    stats = scoreboard.Scoreboard()
+    east_standings = stats.east_conf_standings_by_day()
+    west_standings = stats.west_conf_standings_by_day()
+
+    return render_template("standings.html",
+                            title="standings",
+                            east_standings=enumerate(east_standings, 1),
+                            west_standings=enumerate(west_standings, 1),
+                            team=CITY_TO_TEAM)
 
 def render_score_page(page, datestring, title):
     '''
