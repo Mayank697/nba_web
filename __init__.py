@@ -5,7 +5,10 @@ from flask import url_for
 
 from nbapy import scoreboard 
 from constants import CITY_TO_TEAM
+<<<<<<< HEAD
 from constants import TEAM_ID_DATA
+=======
+>>>>>>> d404b169338f7cd88fce36cc83a729cb4abf2707
 
 from datetime import datetime, timedelta
 
@@ -215,6 +218,20 @@ def test_link(link):
 
 
 
+@app.route('/standings')
+def standings():
+    '''
+        Default Standings
+    '''
+    stats = scoreboard.Scoreboard()
+    east_standings = stats.east_conf_standings_by_day()
+    west_standings = stats.west_conf_standings_by_day()
+
+    return render_template("standings.html",
+                            title="standings",
+                            east_standings=east_standings,
+                            west_standings=west_standings,
+                            team=CITY_TO_TEAM)
 
 def render_score_page(page, datestring, title):
     '''
