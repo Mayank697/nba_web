@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="container">
+<<<<<<< HEAD
+    <br>
+    <form id="dateform" action="/standings" method="POST" class="form-inline">
+        <input type="text" name="date" id="datepicker" class="form-control" placeholder="Date.....">
+    </form>
+    <br>
+    <h3>East Conference</h3>
+    <table class="standings-datatable table table-sm">
+        
+=======
+    <div style="margin-left: 81px;">
+        <form id="dateform" action="/standings" method="POST" class="form-inline">
+            <input type="text" name="date" id="datepicker" class="form-control" placeholder="Date...">
+        </form>
+    </div>
+    <br>
+    <h4>Eastern-Conference</h4>
+    <table class="standings-datatable table table-sm">  
+        <thead>
+            <tr class="standings-datatable table table-sm">
+                <th>SEED</th>
+                <th>TEAM</th>
+                <th>W-L</th>
+                <th>WIN%</th>
+                <th>HOME</th>
+                <th>ROAD</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for value in east_standings %}
+            <tr>
+                {% if loop.index < 9 %}
+                    <th>{{loop.index}}</th>
+                {% else %}
+                    <td>{{loop.index}}</td>
+                {% endif %}
+                <td>{{ value["TEAM"] }}</td>
+            </tr>    
+            {% endfor %}
+        </tbody>
+>>>>>>> d404b169338f7cd88fce36cc83a729cb4abf2707
+    </table>
+</div>
+
+{% endblock %}
