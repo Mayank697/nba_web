@@ -10,6 +10,7 @@ stats = scoreboard.Scoreboard(month=date.month, day=date.day, year=date.year)
 east = stats.east_conf_standings_by_day()
 k = game.BoxScore("0022000536")
 j = k.players_stats()
+summary = game.
 # for i in east:
 #     print(i["TEAM"])
 for i in j:
