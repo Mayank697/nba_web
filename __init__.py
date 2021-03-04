@@ -9,11 +9,18 @@ from constants import TEAM_ID_DATA
 
 from datetime import datetime, timedelta
 
-import dateutil.parser
+import collections
+import praw
+import pytz
 import requests
+import time
+import dateutil.parser
+
 import nbapy
 from nbapy.constants import CURRENT_SEASON
 from nbapy.constants import TEAMS
+from constants import CITY_TO_TEAM
+
 from nbapy import constants 
 from nbapy import game
 from nbapy import player
@@ -21,7 +28,13 @@ from nbapy import team
 from nbapy import league
 from nbapy import draft_combine
 
-from constants import CITY_TO_TEAM
+
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from oauth2client.tools import argparser
+
+
+from bs4 import BeautifulSoup
 
 # YouTube Developer Key
 DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
@@ -152,7 +165,7 @@ def boxscore(gameid, season=CURRENT_SEASON):
     print(elapsedTime)
     """
     #post_game_thread = False
-    post_game_thread = get_post_game_thread(next_year, boxscore_game_summary[0]["GAME_STATUS_TEXT"],boxscore_line_score, team_stats)
+    # post_game_thread = get_post_game_thread(next_year, boxscore_game_summary[0]["GAME_STATUS_TEXT"],boxscore_line_score, team_stats)
 
     #Get link for fullmatchtv (full broadcast video link). It takes 2 extra seconds.
     full_match_url = False
@@ -193,7 +206,6 @@ def boxscore(gameid, season=CURRENT_SEASON):
                             team_summary_info=team_summary_info,
                             pretty_date=pretty_date,
                             boxscore_line_score=boxscore_line_score,
-                            post_game_thread=post_game_thread,
                             home_team=home_team,
                             away_team=away_team,
                             home_team_logo=home_team_logo,
@@ -211,15 +223,33 @@ def test_link(link):
         return False
     else:
         return True
-                                    
 
+def youtube_search(q, max_results=25, freedawkins=None):
+    """Searches YouTube for q and returns YouTube link.
+    """
+    youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
+                    developerKey=DEVELOPER_KEY)
 
+    # Call the search.list method to retrieve results matching the specified
+    # query term.
+    if (freedawkins):
+        search_response = youtube.search().list(q=q,
+                                                part="id,snippet",
+                                                maxResults=max_results,
+                                                channelId="UCEjOSbbaOfgnfRODEEMYlCw").execute()
+    else:
+        search_response = youtube.search().list(q=q,
+                                                part="id,snippet",
+                                                maxResults=max_results,
+                                                type="video").execute()
 
+    # Add each result to the appropriate list, and then display the lists of
+    # matching videos, channels, and playlists.
+    for search_result in search_response.get("items", []):
+        if search_result["id"]["kind"] == "youtube#video":
+            return "//www.youtube.com/embed/" + search_result["id"]["videoId"]
 
-
-         
-
-
+    return False
 
 @app.route('/standings')
 def standings():
