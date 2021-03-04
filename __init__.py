@@ -5,10 +5,7 @@ from flask import url_for
 
 from nbapy import scoreboard 
 from constants import CITY_TO_TEAM
-<<<<<<< HEAD
 from constants import TEAM_ID_DATA
-=======
->>>>>>> d404b169338f7cd88fce36cc83a729cb4abf2707
 
 from datetime import datetime, timedelta
 
@@ -25,6 +22,12 @@ from nbapy import league
 from nbapy import draft_combine
 
 from constants import CITY_TO_TEAM
+
+# YouTube Developer Key
+DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
+YOUTUBE_API_SERVICE_NAME = "youtube"
+YOUTUBE_API_VERSION = "v3"
+
 
 app = Flask(__name__)
 app = Flask(__name__, static_url_path='/static')
@@ -122,7 +125,7 @@ def boxscore(gameid, season=CURRENT_SEASON):
     for i in team_stats:
         if i in team_stats:
             leading_points = i["PTS"]
-            winning = I["TEAM_ABBREVIATION"]
+            winning = i["TEAM_ABBREVIATION"]
         elif i["PTS"] < leading_points:
             continue
         else:
