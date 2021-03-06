@@ -10,11 +10,15 @@ stats = scoreboard.Scoreboard(month=date.month, day=date.day, year=date.year)
 east = stats.east_conf_standings_by_day()
 k = game.BoxScore("0022000536")
 j = k.players_stats()
-summary = game.
+game_stats = game.Info("0022000536")
+game_summary = game_stats.game_summary()
+home_team = game_summary["GAMECODE"][9:12]
+print(home_team.head[0])
+# print(game_summary.head())
 # for i in east:
 #     print(i["TEAM"])
-for i in j:
-    print(i)
+# for i in home_team:
+#     print(i)
 # scores = stats.line_score()
 # status = stats.game_header()
 # boxscore = game.PlayByPlay(game_id="0022000393")
@@ -22,10 +26,10 @@ for i in j:
 # for team in scores:
 #     print(team)
 
-east_standing = stats.east_conf_standings_by_day()
-series_standing = stats.series_standings()
-for i in series_standing:
-    print(i)
+# east_standing = stats.east_conf_standings_by_day()
+# series_standing = stats.series_standings()
+# for i in series_standing:
+#     print(i)
 # print(east_standing.head())
 # print(series_standing.head())
 # scores = stats.line_score()

@@ -83,7 +83,7 @@ def boxscore(gameid, season=CURRENT_SEASON):
     starters_title = True
 
     try:
-        boxscore_summary = game.BoxscoreSummary(gameid)
+        boxscore_summary = game.Info(gameid)
     except:
         return render_template("boxscores.html",title="boxscore,len_team_stats=0")
 
