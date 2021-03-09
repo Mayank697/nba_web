@@ -37,7 +37,7 @@ from oauth2client.tools import argparser
 from bs4 import BeautifulSoup
 
 # YouTube Developer Key
-DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
+DEVELOPER_KEY = ""
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
@@ -89,8 +89,8 @@ def boxscore(gameid, season=CURRENT_SEASON):
 
 
     boxscore_game_summary = boxscore_summary.game_summary()
-    home_team = boxscore_game_summary[0]["GAMECODE"][9:12]
-    away_team = boxscore_game_summary[0]["GAMECODE"][12:16]
+    home_team = boxscore_game_summary["GAMECODE"][9:12]
+    away_team = boxscore_game_summary["GAMECODE"][12:16]
 
     if home_team in TEAM_ID_DATA:
          home_team_city = TEAM_ID_DATA[home_team]["city"]

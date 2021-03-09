@@ -12,8 +12,8 @@ k = game.BoxScore("0022000536")
 j = k.players_stats()
 game_stats = game.Info("0022000536")
 game_summary = game_stats.game_summary()
-home_team = game_summary["GAMECODE"][9:12]
-print(home_team.head[0])
+home_team = game_summary["GAMECODE"][12:16]
+print(home_team)
 # print(game_summary.head())
 # for i in east:
 #     print(i["TEAM"])
