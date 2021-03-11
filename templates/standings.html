@@ -4,22 +4,14 @@
 <div class="container">
     <br>
     <form id="dateform" action="/standings" method="POST" class="form-inline">
-        <input type="text" name="date" id="datepicker" class="form-control" placeholder="Date.....">
+        <input type="text" name="date" id="datepicker" class="form-control" placeholder="mm-dd-yyyy">
     </form>
     <br>
     <h3>East Conference</h3>
-    <table class="standings-datatable table table-sm">
-        
-    <div style="margin-left: 81px;">
-        <form id="dateform" action="/standings" method="POST" class="form-inline">
-            <input type="text" name="date" id="datepicker" class="form-control" placeholder="Date...">
-        </form>
-    </div>
     <br>
-    <h4>Eastern-Conference</h4>
-    <table class="standings-datatable table table-sm">  
+    <table class="standings-datatable table table">  
         <thead>
-            <tr class="standings-datatable table table-sm">
+            <tr class="standings-datatable table table">
                 <th>SEED</th>
                 <th>TEAM</th>
                 <th>W-L</th>
@@ -27,19 +19,62 @@
                 <th>HOME</th>
                 <th>ROAD</th>
             </tr>
-        </thead>
-        <tbody>
-            {% for value in east_standings %}
-            <tr>
-                {% if loop.index < 9 %}
-                    <th>{{loop.index}}</th>
-                {% else %}
+            <tbody>
+                {% for value in east_standings.index %}
+                <tr>
                     <td>{{loop.index}}</td>
-                {% endif %}
-                <td>{{ value["TEAM"] }}</td>
-            </tr>    
-            {% endfor %}
-        </tbody>
+                    <td><a class="nounderline grey" href="/teams/{{east_standings['TEAM_ID'][value]}}">
+                        {% if(east_standings["TEAM"][value] in team) %}
+                            <img class="team-logo" src="/static/{{team[east_standings['TEAM'][value]]['img']}}">
+                            {{team[east_standings["TEAM"][value]]["team-name"]}}
+                        {% else %}
+                            {{east_standings["TEAM"][value]}}
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td>{{east_standings["W"][value]}}-{{east_standings["L"][value]}}</td>
+                    <td>{{'%0.2f'| format(east_standings["W_PCT"][value]*100|float)}}%</td>
+                    <td>{{east_standings["HOME_RECORD"][value]}}</td>
+                    <td>{{east_standings["ROAD_RECORD"][value]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </thead>
+    </table>
+    <br>
+    <h3>West Conference</h3>
+    <br>
+    <table class="standings-datatable table table">  
+        <thead>
+            <tr class="standings-datatable table table">
+                <th>SEED</th>
+                <th>TEAM</th>
+                <th>W-L</th>
+                <th>WIN%</th>
+                <th>HOME</th>
+                <th>ROAD</th>
+            </tr>
+            <tbody>
+                {% for value in west_standings.index %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td><a class="nounderline grey" href="/teams/{{west_standings['TEAM_ID'][value]}}">
+                        {% if(west_standings["TEAM"][value] in team) %}
+                            <img class="team-logo" src="/static/{{team[west_standings['TEAM'][value]]['img']}}">
+                            {{team[west_standings["TEAM"][value]]["team-name"]}}
+                        {% else %}
+                            {{west_standings["TEAM"][value]}}
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td>{{west_standings["W"][value]}}-{{west_standings["L"][value]}}</td>
+                    <td>{{'%0.2f'| format(west_standings["W_PCT"][value]*100|float)}}%</td>
+                    <td>{{west_standings["HOME_RECORD"][value]}}</td>
+                    <td>{{west_standings["ROAD_RECORD"][value]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </thead>
     </table>
 </div>
 

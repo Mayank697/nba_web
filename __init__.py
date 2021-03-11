@@ -1,7 +1,11 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import url_for
+from flask import url_for, redirect, session
+from flask_wtf import FlaskForm
+from wtforms.fields.html5 import DateField
+from wtforms.validators import DataRequired
+from wtforms import validators, SubmitField
 
 from nbapy import scoreboard 
 from constants import CITY_TO_TEAM
@@ -35,6 +39,7 @@ from oauth2client.tools import argparser
 
 
 from bs4 import BeautifulSoup
+from werkzeug.utils import redirect
 
 # YouTube Developer Key
 DEVELOPER_KEY = ""
@@ -44,6 +49,12 @@ YOUTUBE_API_VERSION = "v3"
 
 app = Flask(__name__)
 app = Flask(__name__, static_url_path='/static')
+
+app.config['SECRET_KEY'] = '#$%^&*'
+
+class InfoForm(FlaskForm):
+    date = DateField('date', format='%Y-%m-%d', validators=(validators.DataRequired(),))
+    submit = SubmitField('Submit')
 
 # routing
 @app.route("/")
@@ -262,6 +273,38 @@ def standings():
 
     return render_template("standings.html",
                             title="standings",
+                            east_standings=east_standings,
+                            west_standings=west_standings,
+                            team=CITY_TO_TEAM)
+
+@app.route('/standings/season/<season>')
+def standings_by_season(season):
+    """Standings page by the season year
+    """
+    season = int(season)+1
+    stats = scoreboard.Scoreboard(month=7, day=1, year=season)
+    east_standings = stats.east_conf_standings_by_day()
+    west_standings = stats.west_conf_standings_by_day()
+
+    return render_template('standings.html',
+                            title='standings',
+                            east_standings=east_standings,
+                            west_standings=west_standings,
+                            team=CITY_TO_TEAM)
+
+@app.route('/standings', methods=['POST'])
+def standings_post_request():
+    """
+    Standings page after using the datepicker plugin
+    """
+    date = request.form["date"]
+    datetime_object = datetime.strptime(date, "%m-%d-%Y")
+    stats = scoreboard.Scoreboard(month=datetime_object.month, day=datetime_object.day, year=datetime_object.year)
+    east_standings = stats.east_conf_standings_by_day()
+    west_standings = stats.west_conf_standings_by_day()
+
+    return render_template('standings.html',
+                            title='standings',
                             east_standings=east_standings,
                             west_standings=west_standings,
                             team=CITY_TO_TEAM)
