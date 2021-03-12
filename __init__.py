@@ -100,38 +100,42 @@ def boxscore(gameid, season=CURRENT_SEASON):
 
 
     boxscore_game_summary = boxscore_summary.game_summary()
-    home_team = boxscore_game_summary["GAMECODE"][9:12]
-    away_team = boxscore_game_summary["GAMECODE"][12:16]
+    for value in boxscore_game_summary.index:
+        home_team = boxscore_game_summary["GAMECODE"][value][9:12]
+        away_team = boxscore_game_summary["GAMECODE"][value][12:16]
 
     if home_team in TEAM_ID_DATA:
          home_team_city = TEAM_ID_DATA[home_team]["city"]
-         home_team_city = TEAM_ID_DATA[home_team]["name"]
-         home_team_city = TEAM_ID_DATA[home_team]["img"]
+         home_team_name = TEAM_ID_DATA[home_team]["name"]
+         home_team_logo = TEAM_ID_DATA[home_team]["img"]
     else:
          home_team_logo = False
 
     if away_team in TEAM_ID_DATA:
          away_team_city = TEAM_ID_DATA[away_team]["city"]
-         away_team_city = TEAM_ID_DATA[away_team]["img"]
-         away_team_city = TEAM_ID_DATA[away_team]["name"]
+         away_team_name = TEAM_ID_DATA[away_team]["name"]
+         away_team_logo = TEAM_ID_DATA[away_team]["img"]
     else:
          away_team_logo = False
 
-    boxscore_game_date = boxscore_game_summary[0]["GAME_DATE_EST"]
-    datetime_boxscore = datetime.datetime.strptime(boxscore_game_date[:10], "%y-%m-%d")
+    for value in boxscore_game_summary.index:
+        boxscore_game_date = boxscore_game_summary["GAME_DATE_EST"][value]
+    
+    datetime_boxscore = datetime.strptime(boxscore_game_date[:10], "%Y-%m-%d")
     pretty_date = datetime_boxscore.strftime("%b %d, %y")
 
-       #get current season like "2016-17"
-    to_year = int(boxscore_game_summary[0]["SEASON"])
+    #get current season like "2020-2021"
+    for value in boxscore_game_summary.index:
+        to_year = int(boxscore_game_summary["SEASON"][value])
     next_year = to_year + 1
 
-    season = str(to_year) + "_" + str(next_year)[2:4]
+    season = str(to_year) + "-" + str(next_year)[2:4]
 
        #Create NBA recap link
     recap_date = datetime_boxscore.strftime("%Y/%m/%d") 
       # Get nba recap video links for previous years like 2016 or before.
        # It takes 2 extra seconds. Commenting for now.
-     # nba_recap = False
+    # nba_recap = False
     if(to_year < 2016):
         nba_recap = "http://www.nba.com/video/" + recap_date + "/" + gameid + "-" + home_team + "-" + away_team + "-recap"
         if not test_link(nba_recap):
@@ -146,24 +150,24 @@ def boxscore(gameid, season=CURRENT_SEASON):
     #Figure out which team won or is winning.
     leading_points = 0
     winning = ""
-    for i in team_stats:
+    for i in team_stats.index:
         if i in team_stats:
-            leading_points = i["PTS"]
-            winning = i["TEAM_ABBREVIATION"]
-        elif i["PTS"] < leading_points:
+            leading_points = team_stats["PTS"][i]
+            winning = team_stats["TEAM_ABBREVIATION"][i]
+        elif team_stats["PTS"][i] < leading_points:
             continue
         else:
             winning = False
     # Add a 0 to a single digit minute like 4:20 to 04:20
     # Because bootstrap-datatable requires consistency.                          
-    for i in player_stats:
-        if (i["MIN"] and not isinstance(i["MIN"], int)):
-            if (len(i["MIN"]) == 4):
-                i["MIN"] = "0" + i["MIN"]
+    for i in player_stats.index:
+        if (player_stats["MIN"][i] and not isinstance(player_stats["MIN"][i], int)):
+            if (len(player_stats["MIN"][i]) == 4):
+                player_stats["MIN"][i] = "0" + player_stats["MIN"][i]
 
 
     if (len_team_stats !=0):
-        team_summary_info = [team.TeamSummary(team_stats[0]["TEAM_ID"],season=season).info(),team.TeamSummary(team_stats[1]["TEAM_ID"],season=season).info()]
+        team_summary_info = [team.TeamSummary(team_stats["TEAM_ID"][0],season=season).info(),team.TeamSummary(team_stats["TEAM_ID"][1],season=season).info()]
 
     else:
         team_summary_info = False
@@ -193,11 +197,11 @@ def boxscore(gameid, season=CURRENT_SEASON):
         full_match_url = False
     """
 
-    if (team_stats and boxscore_game_summary[0]["GAME_STATUS_TEXT"] == "Final"):
-        youtube_search_query = team_stats[0]["TEAM_CITY"] + " " + \
-                               team_stats[0]["TEAM_NAME"] + " vs " + \
-                               team_stats[1]["TEAM_CITY"] + " " + \
-                               team_stats[1]["TEAM_NAME"] + " " + \
+    if (not team_stats.empty and boxscore_game_summary["GAME_STATUS_TEXT"][0] == "Final"):
+        youtube_search_query = team_stats["TEAM_CITY"][0] + " " + \
+                               team_stats["TEAM_NAME"][0] + " vs " + \
+                               team_stats["TEAM_CITY"][1] + " " + \
+                               team_stats["TEAM_NAME"][1] + " " + \
                                pretty_date
         youtube_url = youtube_search(youtube_search_query, 1)
     else:
@@ -206,7 +210,7 @@ def boxscore(gameid, season=CURRENT_SEASON):
     inactive_players = boxscore_summary.inactive_players()
     officials = boxscore_summary.officials()
 
-    return render_template("boxscore.html",title="boxscore",
+    return render_template("boxscores.html",title="boxscore",
                             player_stats=player_stats,
                             len_player_stats=len_player_stats,
                             len_team_stats=len_team_stats,
