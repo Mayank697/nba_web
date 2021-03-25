@@ -42,7 +42,7 @@ from bs4 import BeautifulSoup
 from werkzeug.utils import redirect
 
 # YouTube Developer Key
-DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
+DEVELOPER_KEY = ""
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
