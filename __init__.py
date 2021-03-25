@@ -42,7 +42,7 @@ from bs4 import BeautifulSoup
 from werkzeug.utils import redirect
 
 # YouTube Developer Key
-DEVELOPER_KEY = ""
+DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
@@ -184,10 +184,10 @@ def boxscore(gameid, season=CURRENT_SEASON):
 
     #Get link for fullmatchtv (full broadcast video link). It takes 2 extra seconds.
     full_match_url = False
-    """
+    
 
-     if (next_year > 2016 and boxscore_game_summary[0]["GAME_STATUS_TEXT"] == "Final"):
-        match_date = datetime_boxscore.strftime("%b-%-d-%Y")
+    if ((next_year > 2016) and (boxscore_game_summary["GAME_STATUS_TEXT"][0] == "Final")):
+        match_date = datetime_boxscore.strftime("%b-%d-%Y")
         full_match_url = search_nba_full_match(away_team_city,
                                                away_team_name,
                                                home_team_city,
@@ -195,7 +195,7 @@ def boxscore(gameid, season=CURRENT_SEASON):
                                                match_date)
     else:
         full_match_url = False
-    """
+    
 
     if (not team_stats.empty and boxscore_game_summary["GAME_STATUS_TEXT"][0] == "Final"):
         youtube_search_query = team_stats["TEAM_CITY"][0] + " " + \
@@ -239,6 +239,43 @@ def test_link(link):
     else:
         return True
 
+def search_nba_full_match(away_team_city,
+                          away_team_name,
+                          home_team_city,
+                          home_team_name,
+                          match_date):
+    """Searches for nba full game recording from fullmatchtv.com
+    """
+    link_version_one = "http://fullmatchtv.com/nba/"
+    link_version_two = "http://fullmatchtv.com/nba/"
+
+    split_away_team_city = away_team_city.split()
+    split_home_team_city = home_team_city.split()
+
+    for i in split_away_team_city:
+        link_version_one += i + "-"
+    link_version_one += away_team_name + "-"
+
+    for i in split_home_team_city:
+        link_version_one += i + "-"
+        link_version_two += i + "-"
+    link_version_one += home_team_name + "-"
+    link_version_two += home_team_name + "-"
+
+    for i in split_away_team_city:
+        link_version_two += i + "-"
+    link_version_two += away_team_name + "-"
+
+    link_version_one += match_date
+    link_version_two += match_date
+
+    if (test_link(link_version_one)):
+        return link_version_one 
+    elif (test_link(link_version_two)):
+        return link_version_two
+    else:
+        return False
+
 def youtube_search(q, max_results=25, freedawkins=None):
     """Searches YouTube for q and returns YouTube link.
     """
@@ -265,6 +302,8 @@ def youtube_search(q, max_results=25, freedawkins=None):
             return "//www.youtube.com/embed/" + search_result["id"]["videoId"]
 
     return False
+
+
 
 @app.route('/standings')
 def standings():
@@ -312,6 +351,47 @@ def standings_post_request():
                             east_standings=east_standings,
                             west_standings=west_standings,
                             team=CITY_TO_TEAM)
+
+@app.route('/teams/<teamid>')
+def teams(teamid):
+    '''Specific team pages.
+    '''
+    team_summary = team.TeamSummary(teamid)
+    team_summary_info = team_summary.info()
+    team_season_ranks = team_summary.season_ranks()
+
+    team_common_roaster = team.CommonRoster(teamid)
+    coaches = team_common_roaster.coaches()
+    roaster = team_common_roaster.roster()
+    
+    season = team_summary_info["SEASON_YEAR"][0]
+
+    team_game_log = team.GameLogs(teamid, season=season)
+    team_games = team_game_log.logs()
+
+    playoff_game_logs = team.GameLogs(teamid, season_type='Regular Season')
+    playoff_team_games = playoff_game_logs.logs()
+
+    team_season = team.SeasonResults(teamid)
+    team_season_result = team_season.results()
+
+    for k in team_season_result.index:
+        if(team_season_result["YEAR"][k] == season):
+            current_season_info = k
+
+    return render_template("teams.html",
+                            title=team_summary_info["TEAM_CITY"][0] + " " + team_summary_info["TEAM_NAME"][0],
+                            temaid=teamid,
+                            team_summary_info=team_summary_info,
+                            team_season_ranks=team_season_ranks,
+                            season=season,
+                            team_games=team_games,
+                            playoff_team_games=playoff_team_games,
+                            team_season=team_season_result,
+                            roaster=roaster,
+                            coaches=coaches,
+                            current_season_info=current_season_info,
+                            team_img=TEAM_ID_DATA)
 
 def render_score_page(page, datestring, title):
     '''
