@@ -1,0 +1,310 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            {% for i in team_summary_info.index %}
+            <div class="col-md-6">
+                <br>
+                <h4>
+                {{ team_summary_info["TEAM_CITY"][i] }} {{ team_summary_info["TEAM_NAME"][i] }}
+                </h4>
+                {% if team_summary_info["TEAM_ABBREVIATION"][i] in team_img %}
+                {% if team_img[team_summary_info["TEAM_ABBREVIATION"][i]]["img"] %}
+                    <img class="team-logo-lg" src="/static/{{ team_img[team_summary_info['TEAM_ABBREVIATION'][i]]['img']}}">
+                {% endif %} 
+                {% endif %}
+                <h4>{{ team_summary_info["SEASON_YEAR"][i] }}</h4>
+                <ul class="list-unstyled">
+                    <li><b>W-L Record:</b> <a href="/standings/season/{{ team_summary_info['SEASON_YEAR'][i][:4] }}">{{ current_season_info["WINS"] }} - {{ current_season_info["LOSSES"] }}</li></a>
+                    <li><b>{{ team_summary_info["TEAM_CONFERENCE"][i] }} Conference:</b> Rank {{ team_summary_info["CONF_RANK"][i] }}</li>
+                    <li><b>{{ team_summary_info["TEAM_DIVISION"][i] }} Divison:</b> Rank {{ team_summary_info["DIV_RANK"][i] }}</li>
+                    <li><b>NBA Debut:</b> {{ team_summary_info["MIN_YEAR"][i] }}</li>
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    <br>
+    <div>
+        <h4>{{ season }}</h4>
+        <table class="table table-sm">
+            <thead>
+                <tr class="bg-danger text-white">
+                    <th class="text-lg-center">PTS PG</th>
+                    <th class="text-lg-center">REB PG</th>
+                    <th class="text-lg-center">AST PG</th>
+                    <th class="text-lg-center">OPP PTS PG</th>
+                    <th class="text-lg-center">PTS RANK</th>
+                    <th class="text-lg-center">REB RANK</th>
+                    <th class="text-lg-center">AST RANK</th>
+                    <th class="text-lg-center">OPP PTS RANK</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in team_season_ranks.index %}
+            <tr>
+                <td class="text-lg-center">{{ team_season_ranks["PTS_PG"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["REB_PG"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["AST_PG"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["OPP_PTS_PG"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["PTS_RANK"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["REB_RANK"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["AST_RANK"][i] }}</td>
+                <td class="text-lg-center">{{ team_season_ranks["OPP_PTS_RANK"][i] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if playoff_team_games.empty %}
+        <h4>Playoffs</h4>
+        <div>
+        <table class="team-games-datatable table table-sm">
+            <thead class="thead-inverse">
+                <tr class="bg-warning text-white">
+                    <th class="text-lg-center">DATE</th>
+                    <th class="bg-primary text-lg-center">MATCH</th>
+                    <th class="bg-primary">W/L</th>
+                    <th class="bg-primary">MIN</th>
+                    <th class="bg-primary">PTS</th>
+                    <th class="bg-primary">REB</th>
+                    <th class="bg-primary">AST</th>
+                    <th class="bg-primary boxscore-column-width">FG</th>
+                    <th class="bg-primary">FG%</th>
+                    <th class="bg-primary boxscore-column-width">3P</th>
+                    <th class="bg-primary">3P%</th>
+                    <th class="bg-primary boxscore-column-width">FT</th>
+                    <th class="bg-primary">FT%</th>
+                    <th class="bg-primary">OREB</th>
+                    <th class="bg-primary">DREB</th>
+                    <th class="bg-primary">STL</th>
+                    <th class="bg-primary">BLK</th>
+                    <th class="bg-primary">TOV</th>
+                    <th class="bg-primary">PF</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in playoff_team_games.index %}
+            <tr>
+                <th class="text-lg-center">{{ playoff_team_games["GAME_DATE"][i] }}</th> 
+                <th class="text-lg-center"><a class="nounderline" href="/boxscores/{{ playoff_team_games['Game_ID'][i] }}">{{ playoff_team_games["MATCHUP"][i] }}</a></th>
+                <td>{{ playoff_team_games["WL"][i] }}</td>
+                <td>{{ playoff_team_games["MIN"][i] }}</td>
+                <td>{{ playoff_team_games["PTS"][i] }}</td>
+                <td>{{ playoff_team_games["REB"][i] }}</td>
+                <td>{{ playoff_team_games["AST"][i] }}</td>
+                <td>{{ playoff_team_games["FGM"][i] }}-{{ playoff_team_games["FGA"][i] }}</td>
+                {% if playoff_team_games["FG_PCT"][i] %}
+                    <td>{{ playoff_team_games["FG_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ playoff_team_games["FG3M"][i] }}-{{ playoff_team_games["FG3A"][i] }}</td>
+                {% if playoff_team_games["FG3_PCT"][i] %}
+                    <td>{{ playoff_team_games["FG3_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ playoff_team_games["FTM"][i] }}-{{ playoff_team_games["FTA"][i] }}</td>
+                {% if playoff_team_games["FT_PCT"][i] %}
+                    <td>{{ playoff_team_games["FT_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ playoff_team_games["OREB"][i] }}</td>
+                <td>{{ playoff_team_games["DREB"][i] }}</td>
+                <td>{{ playoff_team_games["STL"][[i]] }}</td>
+                <td>{{ playoff_team_games["BLK"][i] }}</td>
+                <td>{{ playoff_team_games["TOV"][i] }}</td>
+                <td>{{ playoff_team_games["PF"][i] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        </div>
+    {% endif %}
+    {% if team_games.empty %}
+        <h4>Regular Season</h4>
+        <div>
+        <table class="team-games-datatable table table-sm">
+            <thead class="thead-inverse">
+                <tr class="bg-warning text-white">
+                    <th class="text-lg-center">DATE</th>
+                    <th class="bg-primary text-lg-center">MATCH</th>
+                    <th class="bg-primary">W/L</th>
+                    <th class="bg-primary">MIN</th>
+                    <th class="bg-primary">PTS</th>
+                    <th class="bg-primary">REB</th>
+                    <th class="bg-primary">AST</th>
+                    <th class="bg-primary boxscore-column-width">FG</th>
+                    <th class="bg-primary">FG%</th>
+                    <th class="bg-primary boxscore-column-width">3P</th>
+                    <th class="bg-primary">3P%</th>
+                    <th class="bg-primary boxscore-column-width">FT</th>
+                    <th class="bg-primary">FT%</th>
+                    <th class="bg-primary">OREB</th>
+                    <th class="bg-primary">DREB</th>
+                    <th class="bg-primary">STL</th>
+                    <th class="bg-primary">BLK</th>
+                    <th class="bg-primary">TOV</th>
+                    <th class="bg-primary">PF</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in team_games.index %}
+            <tr>
+                <th class="text-lg-center">{{ team_games["GAME_DATE"][i] }}</th> 
+                <th class="text-lg-center"><a class="nounderline" href="/boxscores/{{ team_games['Game_ID'][i] }}">{{ team_games["MATCHUP"][i] }}</a></th>
+                <td>{{ team_games["WL"][i] }}</td>
+                <td>{{ team_games["MIN"][i] }}</td>
+                <td>{{ team_games["PTS"][i] }}</td>
+                <td>{{ team_games["REB"][i] }}</td>
+                <td>{{ team_games["AST"][i] }}</td>
+                <td>{{ team_games["FGM"][i] }}-{{ team_games["FGA"][i] }}</td>
+                {% if team_games["FG_PCT"][i] %}
+                    <td>{{ team_games["FG_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ team_games["FG3M"][i] }}-{{ team_games["FG3A"][i] }}</td>
+                {% if i["FG3_PCT"] %}
+                    <td>{{ team_games["FG3_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ team_games["FTM"][i] }}-{{ team_games["FTA"][i] }}</td>
+                {% if team_games["FT_PCT"][i] %}
+                    <td>{{ team_games["FT_PCT"][i] * 100 }}</td>
+                {% else %}
+                    <td>0.0</td>
+                {% endif %}
+                <td>{{ team_games["OREB"][i] }}</td>
+                <td>{{ team_games["DREB"][i] }}</td>
+                <td>{{ team_games["STL"][i] }}</td>
+                <td>{{ team_games["BLK"][i] }}</td>
+                <td>{{ team_games["TOV"][i] }}</td>
+                <td>{{ team_games["PF"][i] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+    {% if roaster.empty %}
+    <br>
+    <div>
+        <h4>roaster</h4>
+        <table class="roaster-datatable table table-sm">
+            <thead class="thead-inverse">
+                <tr class="bg-primary text-white">
+                    <th>PLAYER</th>
+                    <th class="bg-primary text-lg-center">POSITION</th>
+                    <th class="bg-primary text-lg-center">NUMBER</th>
+                    <th class="bg-primary text-lg-center">AGE</th>
+                    <th class="bg-primary text-lg-center">YEARS EXP</th>
+                    <th class="bg-primary text-lg-center">HEIGHT</th>
+                    <th class="bg-primary text-lg-center">WEIGHT</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in roaster.index %}
+            <tr>
+                <th><a class="nounderline" href="/players/{{ roaster['PLAYER_ID'][i] }}">{{ roaster["PLAYER"][i] }} 
+                <td class="text-lg-center">{{ roaster["POSITION"][i] }}</td>
+                <td class="text-lg-center">{{ roaster["NUM"][i] }}</td>
+                <td class="text-lg-center">{{ roaster["AGE"][i] }}</td>
+                <td class="text-lg-center">{{ roaster["EXP"][i] }}</td>
+                <td class="text-lg-center">{{ roaster["HEIGHT"][i] }}</td>
+                <td class="text-lg-center">{{ roaster["WEIGHT"][i] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% if coaches.empty %}
+    <br>
+    <div>
+        <h4>Coaches</h4>
+        <table class="coach-datatable table table-sm">
+            <thead>
+                <tr class="bg-danger text-white">
+                    <th>COACH</th>
+                    <th>TYPE</th>
+                    <th>FROM</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in coaches.index %}
+            <tr>
+                <td>{{ coaches["COACH_NAME"][i] }}</td>
+                <td>{{ coaches["COACH_TYPE"][i] }}</td>
+                {% if coaches["SCHOOL"][i] %}
+                    <td>{{ coaches["SCHOOL"][i] }}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% if team_season.empty %}
+        <br>
+        <div>
+        <h4>Team Seasons</h4>
+        <table class="team-games-datatable table table-sm">
+            <thead class="thead-inverse">
+                <tr class="bg-primary text-white">
+                    <th class="text-lg-center">YEAR</th>
+                    <th class="bg-primary text-lg-center">W-L</th>
+                    <th class="bg-primary">CONF</th>                
+                    <th class="bg-primary">DIV</th>
+                    <th class="bg-primary">PTS</th>
+                    <th class="bg-primary">REB</th>
+                    <th class="bg-primary">AST</th>
+                    <th class="bg-primary boxscore-column-width">FG</th>
+                    <th class="bg-primary">FG%</th>
+                    <th class="bg-primary boxscore-column-width">3P</th>
+                    <th class="bg-primary">3P%</th>
+                    <th class="bg-primary boxscore-column-width">FT</th>
+                    <th class="bg-primary">FT%</th>
+                    <th class="bg-primary">OREB</th>
+                    <th class="bg-primary">DREB</th>
+                    <th class="bg-primary">STL</th>
+                    <th class="bg-primary">BLK</th>
+                    <th class="bg-primary">TOV</th>
+                    <th class="bg-primary">PF</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in team_season.index %}
+            <tr>
+                <th class="text-lg-center"><a class="nounderline" href="/teams/{{ teamid }}/season/{{ team_season['YEAR'][i] }}">{{ team_season["YEAR"][i] }}</a></th>
+                <td class="text-lg-center">{{ team_season["WINS"][i] }}-{{ team_season["LOSSES"][i] }}</td>
+                <td>{{ team_season["CONF_RANK"][i] }}</td>
+                <td>{{ team_season["DIV_RANK"][i] }}</td>
+                <td>{{ team_season["PTS"][i] }}</td>
+                <td>{{ team_season["REB"][i] }}</td>
+                <td>{{ team_season["AST"][i] }}</td>
+                <td>{{ team_season["FGM"][i] }}-{{ team_season["FGA"][i] }}</td>
+                <td>{{ team_season["FG_PCT"][i] * 100 }}</td>
+                <td>{{ team_season["FG3M"][i] }}-{{ team_season["FG3A"][i] }}</td>
+                <td>{{ team_season["FG3_PCT"][i] * 100 }}</td>
+                <td>{{ team_season["FTM"][i] }}-{{ team_season["FTA"][i] }}</td>
+                <td>{{ team_season["FT_PCT"][i] * 100 }}</td>
+                <td>{{ team_season["OREB"][i] }}</td>
+                <td>{{ team_season["DREB"][i] }}</td>
+                <td>{{ team_season["STL"][i] }}</td>
+                <td>{{ team_season["BLK"][i] }}</td>
+                <td>{{ team_season["TOV"][i] }}</td>
+                <td>{{ team_season["PF"][i] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    {% endif %}
+    </div>
+{% endblock %}
