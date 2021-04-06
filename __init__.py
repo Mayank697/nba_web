@@ -42,7 +42,7 @@ from bs4 import BeautifulSoup
 from werkzeug.utils import redirect
 
 # YouTube Developer Key
-DEVELOPER_KEY = ""
+DEVELOPER_KEY = "AIzaSyCg1akudrANiL-227FYY9CNKalHxqAyupA"
 YOUTUBE_API_SERVICE_NAME = "youtube"
 YOUTUBE_API_VERSION = "v3"
 
@@ -303,7 +303,58 @@ def youtube_search(q, max_results=25, freedawkins=None):
 
     return False
 
+@app.route('/players/<playerid>')
+def players(playerid):
+    """Specific player pages.
+    """
+    player_summary = player.Summary(playerid)
+    player_summary_info = player_summary.info()
+    headline_stats = player_summary.headline_stats()
 
+    to_year = int(player_summary_info["TO_YEAR"][0])
+    next_year = to_year + 1
+
+    season = str(to_year)+"-"+str(next_year)[2:4]
+
+    birth_datestring = player_summary_info["BIRTHDATE"][0][:10]
+    birth_date = datetime.strptime(birth_datestring, "%Y-%m-%d")
+    pretty_birth_date = birth_date.strftime("%m-%d-%Y")
+    age = calculate_age(birth_date)
+
+    player_game_logs = player.GameLogs(playerid, season=season)
+    player_games = player_game_logs.logs()
+
+    palyoffs_playergamelogs = player.GameLogs(playerid, season=season)
+    playoffs_player_games = palyoffs_playergamelogs.logs()
+
+    player_carrer = player.Career(playerid)
+    player_carrer_regular_season_totals = player_carrer.reg_season_splits()
+    player_carrer_post_season_totals = player_carrer.post_season_splits()
+
+    player_headshot = "https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/" + playerid + ".png"
+    if(not test_link(player_headshot)):
+        player_headshots = False
+    
+    return render_template("players.html",
+                            title=player_summary_info["DISPLAY_FIRST_LAST"][0],
+                            playerid=playerid,
+                            player_games=player_games,
+                            playoffs_player_games=playoffs_player_games,
+                            player_summary_info=player_summary_info,
+                            headline_stats=headline_stats,
+                            age=age,
+                            pretty_birth_date=pretty_birth_date,
+                            season=season,
+                            player_carrer_regular_season_totals=player_carrer_regular_season_totals,
+                            player_carrer_post_season_totals=player_carrer_post_season_totals,
+                            team_img=TEAM_ID_DATA,
+                            player_headshot=player_headshot)
+
+def calculate_age(born):
+    """Calculates the person's age by subtracting DOB by today's date.
+    """
+    today = datetime.today()
+    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 @app.route('/standings')
 def standings():

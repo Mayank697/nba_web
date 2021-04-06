@@ -1,10 +1,12 @@
 from nbapy import scoreboard
 from nbapy import game
 from nbapy import team
+from nbapy import player
 import pandas as pd
 import datetime
 from pytz import timezone
 from constants import CITY_TO_TEAM
+from constants import TEAM_ID_DATA
 
 game_id = '0021900017'  # taken from 'https://stats.nba.com/game/0021900017/'
 date = datetime.datetime.today() - datetime.timedelta(1)
@@ -38,8 +40,27 @@ seasons = team_seasons.results()
 # tsr = team_summary.season_ranks()
 # print(seasons)
 
-for k in seasons.index:
-        if(seasons["YEAR"][k] == season):
-                current_season = k
+# for k in seasons.index:
+#         if(seasons["YEAR"][k] == season):
+#                 current_season = k
 
-print(k)
+# print(k)
+
+player_summary = player.Summary('203493')
+p_summary = player_summary.info()
+player_carrer = player.Career('1627826')
+# post_season = player_carrer.post_season_splits()
+# for i in p_summary:
+#         print(i)
+# s = player_summary.info()
+# print(s["DRAFT_ROUND"],s["DRAFT_NUMBER"])
+# team_img = TEAM_ID_DATA
+# print(team_img)
+to_year = int(p_summary["TO_YEAR"][0])
+next_year = to_year + 1
+
+season = str(to_year)+"-"+str(next_year)[2:4]
+palyoffs_playergamelogs = player.GameLogs("1628398", season=season)
+playoffs_player_games = palyoffs_playergamelogs.logs()
+for i in playoffs_player_games:
+    print(i)
